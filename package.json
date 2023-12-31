@@ -5,7 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "server": "node ./dist/app.js",
-    "build": "tsc",
+    "build": "tsc --build --verbose",
     "dev": "nodemon -L -e ts,json",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:compile": "npx babel src --extensions .ts --out-dir build --source-maps",
@@ -40,6 +40,7 @@
     "babel-core": "6.26.3",
     "babel-plugin-module-resolver": "5.0.0",
     "babel-plugin-source-map-support": "2.2.0",
+    "cross-env": "7.0.3",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-standard": "17.1.0",
@@ -47,10 +48,10 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-prettier": "5.1.2",
     "eslint-plugin-promise": "6.1.1",
+    "husky": "^8.0.0",
     "prettier": "3.1.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3",
-    "husky": "^8.0.0"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
