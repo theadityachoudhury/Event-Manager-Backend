@@ -139,7 +139,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					verified: user.verified,
 				},
 				JWT_SECRET,
-				{ expiresIn: "10m" }
+				{ expiresIn: "10s" }
 			);
 
 			let refreshToken = jsonwebtoken.sign(
@@ -178,7 +178,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			}
 			res.cookie("token", token, {
 				path: "/",
-				expires: new Date(Date.now() + 1000 * 10 * 60),
+				expires: new Date(Date.now() + 1000 * 10),
 				httpOnly: true,
 				sameSite: "lax",
 			});
@@ -188,14 +188,15 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 				sameSite: "lax",
 			});
 
-			let result = {
+			let backendTokens = {
 				token: token,
 				refreshToken: refreshToken,
+				expiresIn: new Date().setTime(new Date().getTime() + 10 * 1000)
 			};
 
 			return res.status(200).json({
-				...result,
-				data: user,
+				backendTokens,
+				user: user,
 				message: Login_MSG.loginSuccess,
 				success: true,
 			});
@@ -258,7 +259,18 @@ const getuser = async (
 };
 
 const verifytoken = (req: customRequest, res: Response, next: NextFunction) => {
-	const { token, refreshToken } = req.cookies || req.headers['authorization'];
+	let token: any;
+
+	if (req.cookies && req.cookies.token) {
+		token = req.cookies.token;
+	} else if (req.headers['authorization']) {
+		const authHeader = req.headers['authorization'];
+		const bearerTokenMatch = authHeader && authHeader.match(/^Bearer (.+)$/);
+
+		if (bearerTokenMatch) {
+			token = bearerTokenMatch[1];
+		}
+	}
 	if (!token) {
 		return res.status(200).json(null);
 	}
@@ -304,8 +316,9 @@ const refresh = async (
 		res.cookie("token", token);
 		return res.status(200).json({
 			token,
-			message: Login_MSG.loginSuccess,
-			success: true,
+			refreshToken: req.token,
+			expiresIn: new Date().setTime(new Date().getTime() + 10 * 1000)
+
 		});
 	}
 };
@@ -315,8 +328,21 @@ const verifyRefreshToken = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const { refreshToken } = req.cookies;
-	const token = refreshToken;
+	let token: any;
+
+	if (req.cookies && req.cookies.refreshToken) {
+		token = req.cookies.refreshToken;
+	} else if (req.headers['authorization']) {
+		const authHeader = req.headers['authorization'];
+		const bearerTokenMatch = authHeader && authHeader.match(/^Refresh (.+)$/);
+
+		if (bearerTokenMatch) {
+			token = bearerTokenMatch[1];
+		}
+	}
+	if (!token) {
+		return res.status(200).json(null);
+	}
 
 	if (!token) {
 		return res.status(200).json(null);
@@ -336,6 +362,7 @@ const verifyRefreshToken = async (
 				req.email = user.email;
 				req.role = user.role;
 				req.verified = user.verified;
+				req.token = token;
 				next();
 			}
 		}
