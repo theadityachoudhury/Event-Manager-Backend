@@ -178,7 +178,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			}
 			res.cookie("token", token, {
 				path: "/",
-				expires: new Date(Date.now() + 1000 * 10),
+				expires: new Date(Date.now() + 1000 * 60 * 10),
 				httpOnly: true,
 				sameSite: "lax",
 			});
@@ -191,12 +191,12 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			let backendTokens = {
 				token: token,
 				refreshToken: refreshToken,
-				expiresIn: new Date().setTime(new Date().getTime() + 10 * 1000)
+				expiresIn: new Date().setTime(new Date().getTime() + 10 * 60 * 1000)
 			};
 
 			return res.status(200).json({
 				backendTokens,
-				user: user,
+				user,
 				message: Login_MSG.loginSuccess,
 				success: true,
 			});
@@ -261,8 +261,8 @@ const getuser = async (
 const verifytoken = (req: customRequest, res: Response, next: NextFunction) => {
 	let token: any;
 
-	if (req.cookies && req.cookies.token) {
-		token = req.cookies.token;
+	if (req.cookies && (req.cookies.token || req.cookies.accessToken)) {
+		token = req.cookies.token || req.cookies.accessToken;
 	} else if (req.headers['authorization']) {
 		const authHeader = req.headers['authorization'];
 		const bearerTokenMatch = authHeader && authHeader.match(/^Bearer (.+)$/);
@@ -313,7 +313,12 @@ const refresh = async (
 			JWT_SECRET,
 			{ expiresIn: "10m" }
 		);
-		res.cookie("token", token);
+		res.cookie("token", token, {
+			path: "/",
+			expires: new Date(Date.now() + 1000 * 60 * 10),
+			httpOnly: true,
+			sameSite: "lax",
+		});
 		return res.status(200).json({
 			token,
 			refreshToken: req.token,
@@ -330,8 +335,8 @@ const verifyRefreshToken = async (
 ) => {
 	let token: any;
 
-	if (req.cookies && req.cookies.refreshToken) {
-		token = req.cookies.refreshToken;
+	if (req.cookies && (req.cookies.refreshToken || req.cookies.refreshAccessToken)) {
+		token = req.cookies.refreshToken || req.cookies.refreshAccessToken;
 	} else if (req.headers['authorization']) {
 		const authHeader = req.headers['authorization'];
 		const bearerTokenMatch = authHeader && authHeader.match(/^Refresh (.+)$/);
@@ -415,8 +420,8 @@ const verify = async (
 };
 
 const logout = async (req: Request, res: Response, next: NextFunction) => {
-	const { refreshToken } = req.cookies;
-	const token = refreshToken;
+	const { refreshToken, refreshAccessToken } = req.cookies;
+	const token = refreshToken || refreshAccessToken;
 
 	res.clearCookie("token");
 	res.clearCookie("refreshToken");
