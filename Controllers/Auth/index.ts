@@ -480,7 +480,6 @@ const generate = async (
 	const auth_type = "acc_verify";
 	let otp;
 	const email = req.email;
-	const username = req.body.username;
 
 	let auth;
 	try {

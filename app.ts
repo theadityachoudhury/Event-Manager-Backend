@@ -10,6 +10,7 @@ const app = express();
 
 const corsOrigin: string = Config.ORIGIN as string;
 
+
 //Server Configurations
 app.use(
     cors({
@@ -17,6 +18,7 @@ app.use(
         origin: [corsOrigin],
     })
 );
+app.disable('x-powered-by');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

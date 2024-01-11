@@ -22,4 +22,6 @@ router.post(
 	Auth.generate as any
 );
 
+router.get("/logout", Auth.logout)
+
 export default router;
