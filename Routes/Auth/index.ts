@@ -8,6 +8,7 @@ router.post("/signup", AuthValidator.signupValidator, Auth.signup);
 router.post("/login", Auth.login);
 router.get("/user", Auth.verifytoken as any, Auth.getuser as any);
 router.get("/refresh", Auth.verifyRefreshToken as any, Auth.refresh as any);
+router.post("/logout", Auth.logout);
 router.post(
 	"/verify",
 	Auth.verifytoken as any,
@@ -22,6 +23,6 @@ router.post(
 	Auth.generate as any
 );
 
-router.post("/logout", Auth.logout)
+
 
 export default router;
