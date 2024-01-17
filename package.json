@@ -69,11 +69,6 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7"
   },
-  "engines": {
-    "node": ">=18.0.0",
-    "yarn": "use npm",
-    "npm": ">=10.0.0"
-  },
   "lint-staged": {
     "**/*.{ts,js}": "eslint --cache --cache-location .next/cache/eslint/ --fix",
     "**/*.{ts,js,md,json}": "prettier --write"
