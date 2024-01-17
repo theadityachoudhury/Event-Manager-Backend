@@ -27,7 +27,7 @@ app.use(cookieParser());
 
 // Serve the 'public' folder under the '/public' endpoint
 const publicFolderPath = path.join(__dirname, "public");
-app.use("/public", express.static(publicFolderPath));
+app.use("/public", express.static("./public"));
 
 
 //API routes starts here
