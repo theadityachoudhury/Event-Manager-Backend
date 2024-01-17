@@ -4,6 +4,7 @@ import { startServer } from "./Utils";
 import Auth from "./Routes/Auth";
 import cookieParser from "cookie-parser";
 import Config from "./Config";
+import path from "path";
 
 //Server Initialization
 const app = express();
@@ -23,6 +24,10 @@ app.disable('x-powered-by');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+//Public Resources
+const publicFolderPath = path.join(__dirname, "public");
+app.use(express.static(publicFolderPath));
 
 //API routes starts here
 
