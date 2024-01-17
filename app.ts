@@ -8,6 +8,8 @@ import path from "path";
 
 //Server Initialization
 const app = express();
+const publicFolderPath = path.join(__dirname, "public");
+app.use(express.static(publicFolderPath));
 
 const corsOrigin: string = Config.ORIGIN as string;
 
@@ -26,8 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //Public Resources
-const publicFolderPath = path.join(__dirname, "public");
-app.use(express.static(publicFolderPath));
+
 
 //API routes starts here
 
