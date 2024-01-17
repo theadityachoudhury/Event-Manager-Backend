@@ -1,6 +1,7 @@
 import express from "express";
 import Auth from "../../Controllers/Auth";
 import AuthValidator from "../../Validators/Auth";
+import s3 from "../../Controllers/s3";
 
 const router = express.Router();
 
@@ -22,6 +23,9 @@ router.post(
 	AuthValidator.verification as any,
 	Auth.generate as any
 );
+
+router.get("/face-add", s3.faceAdd);
+router.get("/face-get", s3.faceGet);
 
 
 

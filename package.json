@@ -19,6 +19,7 @@
   "author": "Aditya Choudhury || Adwaith PJ",
   "license": "ISC",
   "devDependencies": {
+    "@aws-sdk/types": "3.489.0",
     "@babel/cli": "7.23.4",
     "@babel/core": "7.23.7",
     "@babel/node": "7.22.19",
@@ -27,6 +28,7 @@
     "@babel/preset-env": "7.23.7",
     "@babel/preset-typescript": "7.23.3",
     "@babel/runtime": "7.23.7",
+    "@types/aws-sdk": "2.7.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
@@ -56,7 +58,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.490.0",
     "@aws-sdk/s3-request-presigner": "3.490.0",
-    "@aws-sdk/types": "3.489.0",
     "bcrypt": "^5.1.1",
     "consola": "^3.2.3",
     "cookie-parser": "^1.4.6",
