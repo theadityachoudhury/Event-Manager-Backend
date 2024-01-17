@@ -9,7 +9,7 @@ import path from "path";
 //Server Initialization
 const app = express();
 const publicFolderPath = path.join(__dirname, "public");
-app.use(express.static(publicFolderPath));
+app.use("/public",express.static(publicFolderPath));
 
 const corsOrigin: string = Config.ORIGIN as string;
 
