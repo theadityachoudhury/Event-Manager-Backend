@@ -26,6 +26,10 @@ const UserSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		face: {
+			type: Boolean,
+			default: false
+		},
 		deleted: {
 			type: Boolean,
 			default: false,
