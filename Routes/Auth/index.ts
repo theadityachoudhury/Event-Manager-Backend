@@ -26,6 +26,7 @@ router.post(
 
 router.post("/face-add", Auth.verifytoken as any, s3.faceAdd);
 router.get("/face-get", s3.faceGet);
+router.get("/face-verified", Auth.verifytoken as any, Auth.faceVerified as any);
 
 
 

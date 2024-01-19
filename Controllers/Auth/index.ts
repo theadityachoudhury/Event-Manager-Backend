@@ -536,6 +536,23 @@ const generate = async (
 	});
 };
 
+const faceVerified = async (req: customRequest, res: Response, next: NextFunction) => {
+	const email = req.email;
+	try {
+		const user = await Users.findOne({ email: email });
+		if (!user) {
+			return res.status(400).json({ message: "User not found" });
+		}
+
+		user.face = true;
+		user.save();
+		return res.status(200).json();
+
+	} catch (err: any) {
+		return res.status(500).json("Internal Server Error!!");
+	}
+}
+
 export default {
 	signup,
 	login,
@@ -546,4 +563,5 @@ export default {
 	verify,
 	logout,
 	generate,
+	faceVerified
 };
