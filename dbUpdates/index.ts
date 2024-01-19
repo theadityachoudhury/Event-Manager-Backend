@@ -14,7 +14,7 @@ async function updateExistingUserDocuments() {
     } catch (error) {
         console.error('Error updating documents:', error);
     } finally {
-        mongoose.connection.close();
+        return;
     }
 }
 
@@ -25,6 +25,7 @@ const makeMigrations = async () => {
         message: `Successfully Migrated User Schema`,
         badge: true
     })
+    return;
 }
 
 export default makeMigrations;

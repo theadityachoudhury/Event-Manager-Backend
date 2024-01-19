@@ -208,6 +208,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			});
 		}
 	} catch (e: any) {
+		// console.log(e);
 		let errorMsg = Login_MSG.loginError;
 		if (e.isJoi === true) {
 			e.status = 403;
