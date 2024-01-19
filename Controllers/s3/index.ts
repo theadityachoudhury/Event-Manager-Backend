@@ -32,7 +32,19 @@ const putObject = async (filename: string, contentType: string) => {
 }
 
 const faceAdd = async (req: Request, res: Response, next: NextFunction) => {
-    const url = await putObject("2.jpg", "image/jpg");
+    if (!req.body.key) {
+        return res.status(404).json({
+            message: "Key not found!!"
+        });
+    }
+
+    if (!req.body.type) {
+        return res.status(404).json({
+            message: "Key type not found!!"
+        });
+    }
+    const { key, type } = req.body;
+    const url = await putObject(key, type);
     return res.status(200).json(url);
 }
 
