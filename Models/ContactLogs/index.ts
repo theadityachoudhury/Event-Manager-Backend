@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+/**
+ * Mongoose schema for the Contact model, representing contact form submissions.
+ */
 const ContactSchema = new mongoose.Schema(
     {
         email: {
@@ -18,4 +21,7 @@ const ContactSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+/**
+ * Mongoose model for the Contact schema.
+ */
 export default mongoose.model("Contact", ContactSchema);

@@ -1,0 +1,6 @@
+{
+    "docify.commentService.programmingLanguage": "javascript",
+    "docify.commentService.docstringFormat": "reST",
+    "docify.translateService.programmingLanguage": "javascript",
+    "docify.translateService.docstringFormat": "reST"
+}

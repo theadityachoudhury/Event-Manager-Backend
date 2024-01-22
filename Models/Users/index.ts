@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+/**
+ * Mongoose schema for the Users model, representing user information.
+ */
 const UserSchema = new mongoose.Schema(
 	{
 		name: {
@@ -28,7 +31,7 @@ const UserSchema = new mongoose.Schema(
 		},
 		face: {
 			type: Boolean,
-			default: false
+			default: false,
 		},
 		deleted: {
 			type: Boolean,
@@ -38,4 +41,7 @@ const UserSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
+/**
+ * Mongoose model for the Users schema.
+ */
 export default mongoose.model("Users", UserSchema);

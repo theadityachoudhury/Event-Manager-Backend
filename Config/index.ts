@@ -1,20 +1,29 @@
 import dotenv from 'dotenv';
+
+// Load environment variables from .env file
 dotenv.config();
+
+/**
+ * Configuration interface for application settings.
+ */
 interface AppConfig {
   DB: string;
   REQUEST_TIMEOUT: number;
   PORT: number;
   JWT_SECRET: string;
   JWT_REFRESH_TOKEN_SECRET: string;
-  SMTP_HOST?: string; // Optional property
-  SMTP_USER?: string; // Optional property
-  SMTP_PASS?: string; // Optional property
+  SMTP_HOST?: string; // Optional property for SMTP host
+  SMTP_USER?: string; // Optional property for SMTP username
+  SMTP_PASS?: string; // Optional property for SMTP password
   SMTP_PORT: number;
-  ORIGIN?: string; // Optional property
-  accessKeyId?: any;
-  secretAccessKey?: any;
+  ORIGIN?: string; // Optional property for API origin
+  accessKeyId?: any; // Optional property for AWS access key ID
+  secretAccessKey?: any; // Optional property for AWS secret access key
 }
 
+/**
+ * Application configuration object with default values loaded from environment variables.
+ */
 const config: AppConfig = {
   DB: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB}?retryWrites=true&w=majority`,
   REQUEST_TIMEOUT: parseInt(process.env.REQUEST_TIMEOUT || '5000', 10),

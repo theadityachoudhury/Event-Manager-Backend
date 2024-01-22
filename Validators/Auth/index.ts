@@ -2,6 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import Users from "../../Models/Users";
 
+/**
+ * Interface defining custom properties added to the Express Request object.
+ */
 interface customRequest extends Request {
 	user_id: string;
 	_id: string;
@@ -11,6 +14,9 @@ interface customRequest extends Request {
 	verified: Boolean;
 }
 
+/**
+ * Joi schema for validating user signup data.
+ */
 const signupSchema = Joi.object({
 	name: Joi.string().required().min(1),
 	email: Joi.string().required(),
@@ -20,9 +26,10 @@ const signupSchema = Joi.object({
 		.required(),
 });
 
+/**
+ * Joi schema for validating user login data.
+ */
 const loginSchema = Joi.object({
-	// name: Joi.string().required().min(1),
-	// email: Joi.string().email().required(),
 	email: Joi.string().email().required(),
 	password: Joi.string()
 		.pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*()_]{3,30}$"))
@@ -30,6 +37,10 @@ const loginSchema = Joi.object({
 		.required(),
 });
 
+/**
+ * Middleware for validating user signup data using the signupSchema.
+ * Responds with an error if validation fails.
+ */
 const signupValidator = async (
 	req: Request,
 	res: Response,
@@ -46,16 +57,28 @@ const signupValidator = async (
 	}
 };
 
+/**
+ * Function to validate if an email already exists in the Users collection.
+ * Returns true if the email exists, otherwise false.
+ */
 const validateEmail = async (email: String) => {
 	const user = await Users.findOne({ email: email }).select("email");
 	return user ? true : false;
 };
 
+/**
+ * Function to validate if a username already exists in the Users collection.
+ * Returns true if the username exists, otherwise false.
+ */
 const validateUsername = async (username: String) => {
 	const user = await Users.findOne({ username: username }).select("username");
 	return user ? true : false;
 };
 
+/**
+ * Middleware for checking if a user is already verified.
+ * Responds with an error if the user is already verified.
+ */
 const verification = async (
 	req: customRequest,
 	res: Response,
@@ -71,13 +94,18 @@ const verification = async (
 		next();
 	}
 };
+
+/**
+ * Middleware for checking if an OTP (One-Time Password) is provided in the request body.
+ * Responds with an error if no OTP is provided.
+ */
 const isOTP = (req: customRequest, res: Response, next: NextFunction) => {
 	if (req.body.otp) {
 		next();
 	} else {
 		return res.status(200).json({
 			reason: "no-OTP",
-			message: "no OTP was provided! Enter otp and try again!",
+			message: "no OTP was provided! Enter OTP and try again!",
 			success: false,
 		});
 	}

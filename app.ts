@@ -7,13 +7,14 @@ import cookieParser from "cookie-parser";
 import Config from "./Config";
 import path from "path";
 
-//Server Initialization
+// Server Initialization
 const app = express();
 
 const corsOrigin: string = Config.ORIGIN as string;
 
-
-//Server Configurations
+/**
+ * Configure and initialize the Express server.
+ */
 app.use(
     cors({
         credentials: true,
@@ -30,16 +31,20 @@ app.use(cookieParser());
 const publicFolderPath = path.join(__dirname, "public");
 app.use("/public", express.static("./public"));
 
+// API routes start here
 
-//API routes starts here
-
-//Default routes
+/**
+ * Default middleware for handling CORS headers.
+ */
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.header("Access-Control-Allow-Origin", corsOrigin);
     res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With, Content-Type, Accept");
     next();
 });
 
+/**
+ * Default route providing information about the server.
+ */
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
     res.send({
         data: {
@@ -52,26 +57,41 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-//Health check API
+/**
+ * Health check API endpoint to verify if the server is up and running.
+ */
 app.get("/health", (req: Request, res: Response) => {
     return res.status(200).json({
         status: 200,
         message: "Server is up and running"
-    })
+    });
 });
 
-//App Routes
+// App Routes
+/**
+ * Authentication API routes.
+ */
 app.use("/api/auth", Auth);
+
+/**
+ * Public support API routes.
+ */
 app.use("/api/pr", publicSupport);
 
 // Default not-found route
+/**
+ * Default middleware for handling not-found routes.
+ */
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.send({
         reason: "invalid-request",
         message:
-            "The endpoint you wanna reach is not available! Please check the endpoint again",
+            "The endpoint you want to reach is not available! Please check the endpoint again",
         success: false,
     });
 });
 
+/**
+ * Start the Express server.
+ */
 startServer(app);

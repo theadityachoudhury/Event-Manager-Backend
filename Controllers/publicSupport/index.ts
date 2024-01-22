@@ -2,6 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import contactSchema from "../../Validators/Contact";
 import ContactLogs from "../../Models/ContactLogs";
 
+/**
+ * Adds a new ticket.
+ * 
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ * @param {NextFunction} next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (500).
+ */
 const addTicket = async (req: Request, res: Response, next: NextFunction) => {
     const contactRequest = await contactSchema.validateAsync(req.body);
     try {
@@ -16,10 +24,26 @@ const addTicket = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+/**
+ * Retrieves tickets for a specific user.
+ * 
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ * @param {NextFunction} next - Express next function.
+ */
+
 const getUserTickets = async (req: Request, res: Response, next: NextFunction) => {
 
 };
 
+/**
+ * Retrieves all tickets.
+ * 
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ * @param {NextFunction} next - Express next function.
+ * @returns {Response} - JSON response containing tickets or an error message.
+ */
 const getTickets = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const tickets = await ContactLogs.find();
@@ -29,6 +53,13 @@ const getTickets = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+/**
+ * Retrieves email logs.
+ * 
+ * @param {Request} req - Express request object.
+ * @param {Response} res - Express response object.
+ * @param {NextFunction} next - Express next function.
+ */
 const getEmailLogs = async (req: Request, res: Response, next: NextFunction) => {
 
 };

@@ -3,6 +3,12 @@ import consola from "consola";
 import mongoose from "mongoose";
 
 import User from "../Models/Users";
+
+/**
+ * Updates existing user documents by adding a 'face' field with a default value of false.
+ *
+ * @returns {Promise<void>} A Promise that resolves when the update operation is complete.
+ */
 async function updateExistingUserDocuments() {
     try {
         const result: any = await User.updateMany(
@@ -18,7 +24,11 @@ async function updateExistingUserDocuments() {
     }
 }
 
-
+/**
+ * Initiates database migrations, including updating existing user documents.
+ *
+ * @returns {Promise<void>} A Promise that resolves when the migration process is complete.
+ */
 const makeMigrations = async () => {
     await updateExistingUserDocuments();
     consola.info({

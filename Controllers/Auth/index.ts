@@ -8,8 +8,10 @@ import Config from "../../Config";
 import RefreshToken from "../../Models/RefreshToken";
 import Auth from "../../Models/Auth";
 
+// Extract relevant configuration from the global Config object
 const { JWT_SECRET, JWT_REFRESH_TOKEN_SECRET } = Config;
 
+// Function to generate OTP with a specific length
 const otpgen = (length: number) => {
 	const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	const digits = "0123456789";
@@ -42,6 +44,7 @@ const otpgen = (length: number) => {
 	return otp;
 };
 
+// Define a custom request interface with additional properties
 interface customRequest extends Request {
 	user_id: string;
 	_id: string;
@@ -51,6 +54,7 @@ interface customRequest extends Request {
 	verified: Boolean;
 }
 
+// Define messages for login and registration
 const Login_MSG = {
 	usernameNotExist: "Email is not found. Invalid login credentials.",
 	wrongRole: "Please make sure this is your identity.",
@@ -66,6 +70,14 @@ const Register_MSG = {
 	signupError: "Unable to create your account.",
 };
 
+/**
+ * Handles user registration.
+ * 
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (201) or failure (400, 500).
+ */
 const signup = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		if (await AuthValidator.validateEmail(req.body.email)) {
@@ -104,6 +116,15 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
+/**
+ * Handles user login.
+ * 
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response containing user details and tokens.
+ *                      Success (200) or failure (401, 404, 403, 500).
+ */
 const login = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const loginRequest = await AuthValidator.loginSchema.validateAsync(
@@ -222,6 +243,15 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
+/**
+ * Retrieves user details.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response containing user details.
+ *                      Success (200) or no content (204) if user not found.
+ */
 const getuser = async (
 	req: customRequest,
 	res: Response,
@@ -259,6 +289,14 @@ const getuser = async (
 	return res.status(200).json({ data: user });
 };
 
+/**
+ * Middleware to verify JWT token.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (403).
+ */
 const verifytoken = (req: customRequest, res: Response, next: NextFunction) => {
 	let token: any;
 
@@ -290,6 +328,15 @@ const verifytoken = (req: customRequest, res: Response, next: NextFunction) => {
 	});
 };
 
+/**
+ * Refreshes JWT token.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response containing new tokens.
+ *                      Success (200) or failure (403).
+ */
 const refresh = async (
 	req: customRequest,
 	res: Response,
@@ -329,6 +376,14 @@ const refresh = async (
 	}
 };
 
+/**
+ * Middleware to verify refresh token.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (403).
+ */
 const verifyRefreshToken = async (
 	req: customRequest,
 	res: Response,
@@ -375,6 +430,12 @@ const verifyRefreshToken = async (
 	);
 };
 
+/**
+ * Updates user verification status.
+ * 
+ * @param email - User email.
+ * @param verified - Verification status.
+ */
 const verifyUser = async (email: any, verified: boolean) => {
 	let user = await Users.findOne({ email });
 	if (user) {
@@ -383,6 +444,14 @@ const verifyUser = async (email: any, verified: boolean) => {
 	}
 };
 
+/**
+ * Handles account verification.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (401, 403, 500).
+ */
 const verify = async (
 	req: customRequest,
 	res: Response,
@@ -420,6 +489,14 @@ const verify = async (
 	}
 };
 
+/**
+ * Handles user logout.
+ * 
+ * @param req - Express request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (403).
+ */
 const logout = async (req: Request, res: Response, next: NextFunction) => {
 	const { refreshToken, refreshAccessToken } = req.cookies;
 	const token = refreshToken || refreshAccessToken;
@@ -472,6 +549,15 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 		}
 	});
 };
+
+/**
+ * Generates and sends OTP for account verification.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (403, 500).
+ */
 const generate = async (
 	req: customRequest,
 	res: Response,
@@ -536,6 +622,14 @@ const generate = async (
 	});
 };
 
+/**
+ * Handles face verification.
+ * 
+ * @param req - Custom request object.
+ * @param res - Express response object.
+ * @param next - Express next function.
+ * @returns {Response} - JSON response indicating success (200) or failure (400, 500).
+ */
 const faceVerified = async (req: customRequest, res: Response, next: NextFunction) => {
 	const email = req.email;
 	try {

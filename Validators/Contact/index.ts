@@ -1,5 +1,7 @@
 import Joi from 'joi';
-
+/**
+ * Joi schema for validating contact form data.
+ */
 const contactSchema = Joi.object({
     email: Joi.string().email().required().messages({
         'string.email': 'Invalid email format',

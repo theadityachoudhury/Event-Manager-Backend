@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 import Config from "../Config";
 import makeMigrations from "../dbUpdates";
 
+/**
+ * Establishes a connection to the MongoDB database using Mongoose.
+ * Initiates database migrations after a successful connection.
+ */
 export async function connectToDB() {
     try {
         consola.start({
