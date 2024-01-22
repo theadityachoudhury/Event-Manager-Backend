@@ -11,6 +11,8 @@ interface AppConfig {
   SMTP_PASS?: string; // Optional property
   SMTP_PORT: number;
   ORIGIN?: string; // Optional property
+  accessKeyId?: any;
+  secretAccessKey?: any;
 }
 
 const config: AppConfig = {
@@ -24,6 +26,8 @@ const config: AppConfig = {
   SMTP_PASS: process.env.SMTP_PASS,
   SMTP_PORT: parseInt(process.env.SMTP_PORT || '587', 10),
   ORIGIN: process.env.ORIGIN,
+  accessKeyId: process.env.accessKeyId,
+  secretAccessKey: process.env.secretAccessKey,
 };
 
 export default config;

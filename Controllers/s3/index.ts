@@ -1,12 +1,12 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextFunction, Request, Response } from "express";
-
+import config from "../../Config";
 const s3Client = new S3Client({
     region: "ap-south-1",
     credentials: {
-        accessKeyId: "AKIAQ3EGRHZ34RMT3ZFG",
-        secretAccessKey: "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"
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey
     }
 })
 
