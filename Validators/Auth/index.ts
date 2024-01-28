@@ -111,6 +111,15 @@ const isOTP = (req: customRequest, res: Response, next: NextFunction) => {
 	}
 };
 
+const passwordSchema = Joi.object({
+	otp: Joi.string().required(),
+	password: Joi.string()
+		.pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*()_]{3,30}$"))
+		.min(8)
+		.required(),
+});
+
+
 export default {
 	signupValidator,
 	validateEmail,
@@ -118,4 +127,5 @@ export default {
 	loginSchema,
 	verification,
 	isOTP,
+	passwordSchema
 };

@@ -85,4 +85,9 @@ router.get("/face-get", s3.faceGet);
  */
 router.get("/face-verified", Auth.verifytoken as any, Auth.faceVerified as any);
 
+
+router.post("/forget", Auth.forget);
+router.get("/forget/:otp", Auth.forgetIsValid);
+router.post("/forget/save", Auth.forget_save);
+
 export default router;

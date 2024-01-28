@@ -7,6 +7,7 @@ import jsonwebtoken from "jsonwebtoken";
 import Config from "../../Config";
 import RefreshToken from "../../Models/RefreshToken";
 import Auth from "../../Models/Auth";
+import crypto from "crypto";
 
 // Extract relevant configuration from the global Config object
 const { JWT_SECRET, JWT_REFRESH_TOKEN_SECRET } = Config;
@@ -42,6 +43,12 @@ const otpgen = (length: number) => {
 	}
 
 	return otp;
+};
+
+function hashString(string: string) {
+	const hash = crypto.createHash("sha256");
+	hash.update(string);
+	return hash.digest("hex");
 };
 
 // Define a custom request interface with additional properties
@@ -647,6 +654,94 @@ const faceVerified = async (req: customRequest, res: Response, next: NextFunctio
 	}
 }
 
+/**
+ * 
+ * @param req - Request Objects
+ * @argument email - Gets email address to generate a unique link for password reset
+ * @param res - Express response object
+ * @param next - Express next function.
+ * @returns 
+ */
+const forget = async (req: Request, res: Response, next: NextFunction) => {
+	const auth_type = "pass_reset";
+	const { email } = req.body;
+	const user = await Users.findOne({ email: email });
+	if (!user) {
+		return res.status(404).json({
+			reason: "email",
+			message: "Account associated with this E-Mail Id not found!!",
+			success: false,
+		});
+	}
+
+	let auth = await Auth.findOne({ email: email, auth_type: auth_type });
+	const currentDate = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+	const salt = crypto.randomBytes(16).toString("hex"); // Generate a random salt
+	const stringToHash = currentDate + email + salt;
+	const otp = hashString(stringToHash);
+	if (auth) {
+		auth.otp = otp;
+	} else {
+		auth = new Auth({
+			email,
+			auth_type,
+			otp,
+		});
+	}
+	await auth.save();
+	mailer(
+		email,
+		"Password Reset Link | Get-Me-Through",
+		`To reset your password click this link:- <a href=${Config.ORIGIN}/forget/${otp} target="_blank">${Config.ORIGIN}/forget/${otp}</a>`,
+		auth_type
+	);
+	return res.status(200).json({
+		message: "Password Reset Link Sent to the E-Mail ID",
+		success: true,
+	});
+};
+
+const forgetIsValid = async (req: Request, res: Response, next: NextFunction) => {
+	const auth_type = "pass_reset";
+	const { otp } = req.params;
+	try {
+		const auth = await Auth.findOne({ otp: otp, auth_type: auth_type });
+		return auth ? res.status(200).json() : res.status(404).json();
+	} catch (err) {
+		return res.status(500).json();
+	}
+};
+
+const forget_save = async (req: Request, res: Response, next: NextFunction) => {
+	const auth_type = "pass_reset";
+	const { password, otp } = req.body;
+	try {
+		const resetRequest = await AuthValidator.passwordSchema.validateAsync(req.body);
+
+		const auth = await Auth.findOne({ otp: otp, auth_type: auth_type });
+
+		if (!auth) {
+			return res.status(404).json();
+		}
+
+		const user = await Users.findOne({
+			email: auth.email
+		})
+
+		if (!user) {
+			return res.status(404).json()
+		}
+
+		user.password = await bcrypt.hash(password, 12);
+		await user.save();
+		await Auth.findByIdAndDelete(auth._id);
+		return res.json();
+	} catch (err) {
+		console.log(err);
+		return res.status(400).json("Please try again with password with minimum 8 characters!!");
+	}
+}
+
 export default {
 	signup,
 	login,
@@ -657,5 +752,8 @@ export default {
 	verify,
 	logout,
 	generate,
-	faceVerified
+	faceVerified,
+	forget,
+	forgetIsValid,
+	forget_save
 };
