@@ -167,7 +167,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					verified: user.verified,
 				},
 				JWT_SECRET,
-				{ expiresIn: "10s" }
+				{ expiresIn: "10m" }
 			);
 
 			let refreshToken = jsonwebtoken.sign(
