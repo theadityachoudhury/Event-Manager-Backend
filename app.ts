@@ -8,6 +8,7 @@ import Category from "./Routes/Category";
 import cookieParser from "cookie-parser";
 import Config from "./Config";
 import path from "path";
+import Demo from "./Routes/Demo";
 
 // Server Initialization
 const app = express();
@@ -91,6 +92,8 @@ app.use("/api/event", Event);
  * Category API routes.
  */
 app.use("/api/category", Category);
+app.use("/api/demo", Demo);
+
 
 // Default not-found route
 /**
