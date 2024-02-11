@@ -57,7 +57,9 @@ const viewEvent = async (req: Request, res: Response, next: NextFunction) => {
 
 const searchEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const filters: any = {};
+        const filters: any = {
+            eventType:"open"
+        };
         if (req.query.free === 'string') {
             filters['free'] = req.query.free
         }
@@ -73,7 +75,7 @@ const searchEvents = async (req: Request, res: Response, next: NextFunction) => 
         const page = parseInt(req.query.page as string, 10) || 1;
         const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
 
-        const queryResults = Events.find(filters).skip((page - 1) * pageSize).limit(pageSize);
+        const queryResults = Events.find(filters).skip((page - 1) * pageSize).limit(pageSize).populate("eventCategory");
         const totalCount = await Events.countDocuments(filters);
 
         const totalPages = Math.ceil(totalCount / pageSize);
