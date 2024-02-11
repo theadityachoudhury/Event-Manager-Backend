@@ -49,16 +49,18 @@ const updateEvent = async (req: Request, res: Response, next: NextFunction) => {
 
 const viewEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        
+        const { id } = req.params;
+        const event = await Events.findById(id).populate("eventCategory");
+        return res.status(200).json(event);
     } catch (err) {
-        
+        return res.status(500).json();
     }
 };
 
 const searchEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const filters: any = {
-            eventType:"open"
+            eventType: "open"
         };
         if (req.query.free === 'string') {
             filters['free'] = req.query.free

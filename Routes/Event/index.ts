@@ -13,6 +13,7 @@ const router = express.Router();
 router.post("/", Auth.verifytoken as any, Events.addEvents);
 router.delete("/", Auth.verifytoken as any, EventValidator.isOwner as any, Events.deleteEvent);
 router.get("/", Events.searchEvents);
+router.get("/:id", Events.viewEvent);
 
 
 export default router;
