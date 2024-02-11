@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 
+interface EventCategory {
+    categoryName: string;
+}
+
 /**
  * Mongoose schema for the eventSchema model, representing event entries.
  */
@@ -16,7 +20,10 @@ const eventsSchema = new mongoose.Schema(
         eventCategory: {
             type: mongoose.Schema.ObjectId,
             required: true,
-            ref: "Category"
+            ref: "Category",
+            get: function (this: any, categoryId: mongoose.Types.ObjectId) {
+                return this.categoryName;
+            }
         },
         eventLocation: {
             type: String,

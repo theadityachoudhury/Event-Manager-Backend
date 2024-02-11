@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import eventValidator from "../../Validators/Events";
 import Events from "../../Models/Events";
+import Fuse from "fuse.js";
 const addEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const eventValidated = await eventValidator.eventsSchema.validateAsync(req.body);
@@ -57,43 +58,113 @@ const viewEvent = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const searchEvents = async (req: Request, res: Response, next: NextFunction) => {
+// const searchEvents = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const filters: any = {
+//             eventType: "open"
+//         };
+
+//         const query = req.query.query as string;
+
+//         const page = parseInt(req.query.page as string, 10) || 1;
+//         const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+
+//         const queryResults = Events.find(filters).skip((page - 1) * pageSize).limit(pageSize).populate("eventCategory");
+//         const totalCount = await Events.countDocuments(filters);
+
+//         const totalPages = Math.ceil(totalCount / pageSize);
+
+//         const metadata: any = { currentPage: page, perPage: pageSize, totalPages };
+//         if (page > 1) metadata.prevPage = page - 1;
+//         if (page < totalPages) metadata.nextPage = page + 1;
+
+//         const results: any = await queryResults;
+//         if (!query) {
+//             return res.status(200).json({ success: true, results, metadata });
+
+//         }
+//         // Set up Fuse options
+//         const fuseOptions = {
+//             keys: ["eventName", "eventDescription", "eventCategory.categoryName", "eventLocation", "price", "free"], // Fields to search
+//             threshold: 0.4, // Adjust as needed
+//         };
+
+//         const fuse = new Fuse(results, fuseOptions);
+//         const result = fuse.search(query);
+
+
+
+//         return res.status(200).json({ success: true, result, metadata });
+
+//     } catch (err) {
+//         res.status(500).json({ success: false, error: 'Internal Server Error', err: err });
+
+//     }
+// };
+
+
+const search = async (query: any, page = 1, perPage = 10) => {
     try {
-        const filters: any = {
-            eventType: "open"
+        // Fetch events from the database and populate the eventCategory field
+        const events = await Events.find({ eventType: "open" }).populate('eventCategory');
+        if (!query) query = " ";
+
+        // Set up Fuse options for searching
+        const fuseOptions = {
+            keys: ["eventName", "eventCategory", "categoryName", "eventDescription", "eventLocation", "price"],
+            includeScore: true,
+            threshold: 0.6 // Adjust this threshold based on your needs
         };
-        if (req.query.free === 'string') {
-            filters['free'] = req.query.free
-        }
 
-        if (req.query.eventCategory === 'string') {
-            filters['eventCategory'] = req.query.eventCategory
-        }
+        // Initialize Fuse with the events and options
+        const fuse = new Fuse(events, fuseOptions);
 
-        if (req.query.price === 'string') {
-            filters['price'] = parseInt(req.query.price, 10);
-        }
+        // Perform the search
+        const searchResult = fuse.search(query);
 
-        const page = parseInt(req.query.page as string, 10) || 1;
-        const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+        // Calculate pagination parameters
+        const totalResults = searchResult.length;
+        const totalPages = Math.ceil(totalResults / perPage);
+        const startIndex = (page - 1) * perPage;
+        const endIndex = Math.min(startIndex + perPage, totalResults);
 
-        const queryResults = Events.find(filters).skip((page - 1) * pageSize).limit(pageSize).populate("eventCategory");
-        const totalCount = await Events.countDocuments(filters);
+        // Slice the search result based on pagination parameters
+        const paginatedResult = searchResult.slice(startIndex, endIndex);
 
-        const totalPages = Math.ceil(totalCount / pageSize);
+        // Format the result to remove Fuse.js score and return only the item
+        const formattedResult = paginatedResult.map(({ item }) => item);
 
-        const metadata: any = { currentPage: page, perPage: pageSize, totalPages };
-        if (page > 1) metadata.prevPage = page - 1;
-        if (page < totalPages) metadata.nextPage = page + 1;
+        // Metadata about the page
+        const metadata = {
+            currentPage: page,
+            perPage,
+            totalResults,
+            totalPages,
+            nextPage: page < totalPages ? page + 1 : null,
+            prevPage: page > 1 ? page - 1 : null
+        };
 
-        const results = await queryResults;
-        res.status(200).json({ success: true, results, metadata });
-
-    } catch (err) {
-        res.status(500).json({ success: false, error: 'Internal Server Error', err: err });
-
+        return { results: formattedResult, metadata };
+    } catch (error) {
+        console.error("Error searching events:", error);
+        throw error;
     }
 };
+
+const searchEvents = async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query.query || "";
+    const page = parseInt(req.query.page as string) | 1;
+    const perPage = parseInt(req.query.perPage as string) | 10;
+
+    try {
+        const result = await search(query, page, perPage);
+        return res.status(200).json(result);
+    } catch (err) {
+        return res.status(500).json();
+    }
+
+
+}
 
 const markAttendance = async (req: Request, res: Response, next: NextFunction) => {
 
