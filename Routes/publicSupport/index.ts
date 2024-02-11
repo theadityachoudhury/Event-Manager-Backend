@@ -16,7 +16,7 @@ router.post("/contact", publicSupport.addTicket);
  * Requires token verification using Auth.verifytoken middleware.
  * Calls publicSupport.getTickets controller to retrieve tickets.
  */
-router.get("/contact", Auth.verifytoken as any, publicSupport.getTickets);
+router.get("/contact", Auth.verifytoken as any, AuthValidator.isAdmin as any, publicSupport.getTickets);
 
 /**
  * Placeholder route for retrieving a specific contact form submission (ticket) by its ID.

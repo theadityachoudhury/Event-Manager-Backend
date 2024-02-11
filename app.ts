@@ -3,6 +3,8 @@ import cors from "cors";
 import { startServer } from "./Utils";
 import Auth from "./Routes/Auth";
 import publicSupport from "./Routes/publicSupport";
+import Event from "./Routes/Event";
+import Category from "./Routes/Category";
 import cookieParser from "cookie-parser";
 import Config from "./Config";
 import path from "path";
@@ -77,6 +79,18 @@ app.use("/api/auth", Auth);
  * Public support API routes.
  */
 app.use("/api/pr", publicSupport);
+
+
+/**
+ * Events API routes.
+ */
+app.use("/api/event", Event);
+
+
+/**
+ * Category API routes.
+ */
+app.use("/api/category", Category);
 
 // Default not-found route
 /**

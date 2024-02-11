@@ -119,6 +119,18 @@ const passwordSchema = Joi.object({
 		.required(),
 });
 
+const isAdmin = (req: customRequest, res: Response, next: NextFunction) => {
+	if (req.role === "admin") {
+		next();
+	} else {
+		return res.status(403).json({
+			reason: "no-permission",
+			message: "You need elevated permission to access this endpoint! If you think this is a mistake please contact the administrator!!",
+			success: false
+		})
+	}
+}
+
 
 export default {
 	signupValidator,
@@ -127,5 +139,6 @@ export default {
 	loginSchema,
 	verification,
 	isOTP,
-	passwordSchema
+	passwordSchema,
+	isAdmin,
 };

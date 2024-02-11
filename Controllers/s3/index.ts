@@ -2,6 +2,17 @@ import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextFunction, Request, Response } from "express";
 import config from "../../Config";
+import Users from "../../Models/Users";
+
+// Define a custom request interface with additional properties
+interface customRequest extends Request {
+    user_id: string;
+    _id: string;
+    token: String;
+    email: String;
+    role: String;
+    verified: Boolean;
+}
 
 const s3Client = new S3Client({
     region: "ap-south-1",
@@ -37,7 +48,7 @@ const getObjectURL = async (key: string): Promise<string> => {
 const putObject = async (filename: string, contentType: string): Promise<string> => {
     const command = new PutObjectCommand({
         Bucket: "evently-data",
-        Key: `user/face/${filename}`,
+        Key: `profile/${filename}`,
         ContentType: contentType
     });
 
@@ -73,9 +84,16 @@ const faceAdd = async (req: Request, res: Response, next: NextFunction): Promise
  * @param {NextFunction} next - Express next function.
  * @returns {Response} - JSON response containing the signed URL.
  */
-const faceGet = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
-    const url = await getObjectURL('user/face/2.jpg');
-    return res.status(200).json(url);
+const faceGet = async (req: customRequest, res: Response, next: NextFunction): Promise<Response> => {
+    try {
+        const user = await Users.findById(req._id);
+        if (!user) return res.status(200).json(null);
+        const url = await getObjectURL(`profile/${req._id}`);
+        return res.status(200).json(url);
+    } catch (err) {
+        return res.status(500).json({ message: "Internal Server Error!!", log: err });
+    }
+
 };
 
 export default {

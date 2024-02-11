@@ -755,5 +755,5 @@ export default {
 	faceVerified,
 	forget,
 	forgetIsValid,
-	forget_save
+	forget_save,
 };

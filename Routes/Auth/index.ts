@@ -71,12 +71,13 @@ router.post(
  * Calls s3.faceAdd controller to handle the face image addition process.
  */
 router.post("/face-add", Auth.verifytoken as any, s3.faceAdd);
-
+    
 /**
  * Route for getting face images.
  * Calls s3.faceGet controller to retrieve face images.
  */
-router.get("/face-get", s3.faceGet);
+// router.get("/face-get", s3.faceGet);
+router.get("/profile", Auth.verifytoken as any, s3.faceGet as any);
 
 /**
  * Route for verifying face image.
