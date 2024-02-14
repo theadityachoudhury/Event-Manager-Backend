@@ -4,7 +4,7 @@ import config from "../../Config";
 import EventRegistered from "../../Models/EventRegistered";
 import Payments from "../../Models/Payments";
 import Events from "../../Models/Events";
-
+import crypto from "crypto"
 
 // Define a custom request interface with additional properties
 interface customRequest extends Request {
@@ -52,7 +52,7 @@ const createOrderEvent = async (req: customRequest, res: Response, next: NextFun
 
         const { id, amount, amount_paid, currency, receipt, status, attempts } = await paymentInstance.orders.create(options);
 
-        // await apply.save();
+        await apply.save();
 
         //Making a payment and connecting it to the user, event and registration Id
 
@@ -69,7 +69,7 @@ const createOrderEvent = async (req: customRequest, res: Response, next: NextFun
             receipt: receipt,
             attempts: attempts
         });
-        // await payment.save();
+        await payment.save();
         return res.status(200).json({ order_id: id, currency: currency, amount: amount });
     } catch (err) {
         return res.status(500).json({
@@ -84,7 +84,34 @@ const createOrderEvent = async (req: customRequest, res: Response, next: NextFun
 
 
 const verifyPayment = async (req: Request, res: Response, next: NextFunction) => {
-    return res.redirect("http://localhost:5173/success");
+    const razorpay_secret = config.RZRPAY_WEBHOOK_SECRET;
+    const shasum = crypto.createHmac('sha256', razorpay_secret);
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest('hex');
+    if (digest != req.headers['x-razorpay-signature']) {
+        return res.status(401).json();
+    }
+
+    const { order_id, status, id, method, international, receipt } = req.body.payload.payment.entity;
+    const payment = await Payments.findOne({ referenceNumber: order_id });
+    if (payment) {
+        if (payment.status)
+            payment.status = status;
+        if (payment.paymentId)
+            payment.paymentId = id;
+        if (payment.paymentMethod)
+            payment.paymentMethod = method;
+        if (payment.international)
+            payment.international = international;
+        if (payment.receipt)
+            payment.receipt = receipt;
+
+        await payment.save();
+    }
+
+
+    return res.status(200).json();
+
 }
 
 export default {

@@ -10,7 +10,7 @@ const router = express.Router();
  * Calls Category.createCategory controller to handle the ticket submission.
  */
 router.post("/verify", Payments.verifyPayment as any);
-
+router.post("/webhook/eventpayment");
 router.post("/:eventId", Auth.verifytoken as any, Payments.createOrderEvent as any);
 
 

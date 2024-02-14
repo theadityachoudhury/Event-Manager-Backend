@@ -21,6 +21,8 @@ interface AppConfig {
   secretAccessKey?: any; // Optional property for AWS secret access key
   RZRPAY_ID: string;
   RZRPAY_SECRET: string;
+  RZRPAY_WEBHOOK_SECRET: string;
+
 }
 
 /**
@@ -40,7 +42,8 @@ const config: AppConfig = {
   accessKeyId: process.env.accessKeyId,
   secretAccessKey: process.env.secretAccessKey,
   RZRPAY_ID: process.env.RZRPAY_ID || "",
-  RZRPAY_SECRET: process.env.RZRPAY_SECRET || ""
+  RZRPAY_SECRET: process.env.RZRPAY_SECRET || "",
+  RZRPAY_WEBHOOK_SECRET: process.env.RZRPAY_WEBHOOK_SECRET || ""
 };
 
 export default config;

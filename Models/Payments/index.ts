@@ -55,6 +55,10 @@ const PaymentsSchema = new mongoose.Schema(
         attempts: {
             type: String,
             required: true
+        },
+        paymentId: {
+            type: String,
+            required: false
         }
     },
     { timestamps: true }
