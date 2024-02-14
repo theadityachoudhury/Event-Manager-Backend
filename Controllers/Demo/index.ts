@@ -25,6 +25,7 @@ const addItem = async (req: customRequest, res: Response) => {
             success: true
         });
     } catch (err: any) {
+        console.log(err)
         let errorMsg = "Internal Server Error";
         if (err.isJoi === true) {
             err.status = 404;

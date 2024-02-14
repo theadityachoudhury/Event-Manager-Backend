@@ -9,7 +9,7 @@ const DemoSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        canditateName: {
+        candidateName: {
             type: String,
             required: true
         },
