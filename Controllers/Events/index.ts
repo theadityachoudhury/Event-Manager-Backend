@@ -2,6 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import eventValidator from "../../Validators/Events";
 import Events from "../../Models/Events";
 import Fuse from "fuse.js";
+import EventRegistered from "../../Models/EventRegistered";
+
+// Define a custom request interface with additional properties
+interface customRequest extends Request {
+    user_id: string;
+    _id: string;
+    token: String;
+    email: String;
+    role: String;
+    verified: Boolean;
+}
+
+
 const addEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const eventValidated = await eventValidator.eventsSchema.validateAsync(req.body);
@@ -178,8 +191,37 @@ const isApplied = async (req: Request, res: Response, next: NextFunction) => {
 
 };
 
-const apply = async (req: Request, res: Response, next: NextFunction) => {
+const apply = async (req: customRequest, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(404).json();
+        }
+        const event = await Events.findById(id);
+        if (!event) {
+            return res.status(404).json();
+        }
+        const applied = await EventRegistered.findOne({ userId: req._id, eventId: id });
+        if (applied) {
+            return res.status(409).json();
+        }
+        if (event.participantsCount >= event.eventParticipationLimit) {
+            return res.status(406).json();
+        }
 
+        const apply = new EventRegistered({
+            userId: req._id,
+            eventId: id,
+        });
+        await apply.save();
+
+        return res.status(200).json();
+    } catch (err) {
+        return res.status(500).json({
+            message: "Internal Server Error", success: false,
+            err: err
+        });
+    }
 };
 
 const registeredUser = async (req: Request, res: Response, next: NextFunction) => {

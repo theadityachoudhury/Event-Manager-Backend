@@ -5,13 +5,50 @@ import mongoose from "mongoose";
  */
 const DemoSchema = new mongoose.Schema(
     {
-        email: {
+        admissionReferenceNumber: {
             type: String,
             required: true
         },
-        itemName: {
+        canditateName: {
             type: String,
             required: true
+        },
+        candidateCity: {
+            type: String,
+            required: true
+        },
+        candidateState: {
+            type: String,
+            required: true
+        },
+        candidatePinCode: {
+            type: Number,
+            required: true
+        },
+        candidateAmountPaid: {
+            type: Number,
+            required: true
+        },
+        candidateContactNumber: {
+            type: String,
+            required: true
+        },
+        candidateEmailId: {
+            type: String,
+            requierd: true
+        },
+        candidateDepartment: {
+            type: String,
+            required: true
+        },
+        candidateRelation: {
+            type: String,
+            required: true
+        },
+        employeeId: {
+            type: mongoose.Schema.ObjectId,
+            required: true,
+            ref: "Users"
         }
     },
     { timestamps: true }

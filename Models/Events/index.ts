@@ -79,6 +79,10 @@ const eventsSchema = new mongoose.Schema(
             type: Boolean,
             required: true,
             default: false
+        },
+        participantsCount: {
+            type: Number,
+            default: 0
         }
     },
     { timestamps: true }

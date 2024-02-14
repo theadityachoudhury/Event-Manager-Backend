@@ -17,7 +17,7 @@ const addItem = async (req: customRequest, res: Response) => {
         const validatedData = await DemoValidator.demoSchema.validateAsync(req.body);
         const itemData = new Demo({
             ...validatedData,
-            email: req.email
+            employeeId: req._id
         });
         await itemData.save();
         return res.status(201).json({
@@ -40,7 +40,7 @@ const addItem = async (req: customRequest, res: Response) => {
 
 const getItem = async (req: customRequest, res: Response) => {
     try {
-        const demo = await Demo.find({ email: req.email });
+        const demo = await Demo.find({ email: req.email }).populate("employeeId");
         return res.status(200).json(demo);
     } catch (err) {
         return res.status(500).json({
