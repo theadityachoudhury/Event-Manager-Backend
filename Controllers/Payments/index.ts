@@ -39,7 +39,15 @@ const createOrderEvent = async (req: customRequest, res: Response, next: NextFun
 
         const applied = await EventRegistered.findOne({ eventId: eventId, userId: req._id });
         if (applied) {
-            return res.status(409).json();
+            const payment = await Payments.findOne({ eventId: eventId, userId: req._id });
+            if (payment) {
+                if (payment.status === "captured")
+                    return res.status(409).json();
+                else {
+                    return res.status(200).json({ order_id: payment.referenceNumber, currency: payment.currency, amount: payment.amount });
+                }
+            }
+
         }
         //Registering the user temporarily to the event
         const apply = new EventRegistered({ eventId: eventId, userId: req._id });

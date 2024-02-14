@@ -3,6 +3,7 @@ import eventValidator from "../../Validators/Events";
 import Events from "../../Models/Events";
 import Fuse from "fuse.js";
 import EventRegistered from "../../Models/EventRegistered";
+import Payments from "../../Models/Payments";
 
 // Define a custom request interface with additional properties
 interface customRequest extends Request {
@@ -187,8 +188,31 @@ const getAttendance = async (req: Request, res: Response, next: NextFunction) =>
 
 };
 
-const isApplied = async (req: Request, res: Response, next: NextFunction) => {
-
+const isApplied = async (req: customRequest, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(404).json();
+        }
+        const event = await Events.findById(id);
+        if (!event) {
+            return res.status(403).json();
+        }
+        const applied = await EventRegistered.findOne({ userId: req._id, eventId: id });
+        if (applied) {
+            const payment: any = await Payments.findOne({ eventId: id, userId: req._id });
+            if (payment) {
+                if (payment.status == "captured")
+                    return res.status(200).json();
+            }
+        }
+        return res.status(401).json();
+    } catch (err) {
+        return res.status(500).json({
+            message: "Internal Server Error", success: false,
+            err: err
+        });
+    }
 };
 
 const apply = async (req: customRequest, res: Response, next: NextFunction) => {
@@ -203,7 +227,9 @@ const apply = async (req: customRequest, res: Response, next: NextFunction) => {
         }
         const applied = await EventRegistered.findOne({ userId: req._id, eventId: id });
         if (applied) {
-            return res.status(409).json();
+            const payment: any = Payments.findOne({ eventId: id, userId: req._id });
+            if (payment && payment.status === "captured")
+                return res.status(409).json();
         }
         if (event.participantsCount >= event.eventParticipationLimit) {
             return res.status(406).json();
