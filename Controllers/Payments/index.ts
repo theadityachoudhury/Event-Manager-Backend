@@ -5,6 +5,7 @@ import EventRegistered from "../../Models/EventRegistered";
 import Payments from "../../Models/Payments";
 import Events from "../../Models/Events";
 import crypto from "crypto"
+import { mailer } from "../../Utils";
 
 // Define a custom request interface with additional properties
 interface customRequest extends Request {
@@ -93,23 +94,14 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction) =>
     }
 
     const { order_id, status, id, method, international, receipt } = req.body.payload.payment.entity;
-    const payment = await Payments.findOne({ referenceNumber: order_id });
-    if (payment) {
-        if (payment.status)
-            payment.status = status;
-        if (payment.paymentId)
-            payment.paymentId = id;
-        if (payment.paymentMethod)
-            payment.paymentMethod = method;
-        if (payment.international)
-            payment.international = international;
-        if (payment.receipt)
-            payment.receipt = receipt;
-
-        await payment.save();
-    }
-
-
+    const payment = await Payments.findOneAndUpdate({ referenceNumber: order_id }, {
+        status: status,
+        paymentId: id,
+        paymentMethod: method,
+        international: international,
+        receipt: receipt,
+    });
+    mailer("adityasubham03@gmail.com", "Payment Update", `${req.body}`, "payment_info")
     return res.status(200).json();
 
 }

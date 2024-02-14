@@ -34,7 +34,6 @@ const PaymentsSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
-            required: false,
         },
         referenceNumber: {
             type: String,
@@ -46,11 +45,9 @@ const PaymentsSchema = new mongoose.Schema(
         },
         international: {
             type: Boolean,
-            default: false
         },
         receipt: {
             type: String,
-            required: false,
         },
         attempts: {
             type: String,
@@ -58,7 +55,6 @@ const PaymentsSchema = new mongoose.Schema(
         },
         paymentId: {
             type: String,
-            required: false
         }
     },
     { timestamps: true }
