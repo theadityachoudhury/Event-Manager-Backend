@@ -1,4 +1,3 @@
-import { boolean, required } from "joi";
 import mongoose from "mongoose";
 
 /**
@@ -25,21 +24,36 @@ const PaymentsSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
-        paid: {
-            type: Boolean,
-            default: false
+        amountPaid: {
+            type: Number,
+            required: true
+        },
+        status: {
+            type: String,
+            required: true
         },
         paymentMethod: {
             type: String,
+            required: false,
         },
         referenceNumber: {
-            type: String
+            type: String,
+            required: true
         },
         currency: {
-            type: String
+            type: String,
+            required: true,
         },
         international: {
-            type: boolean,
+            type: Boolean,
+            default: false
+        },
+        receipt: {
+            type: String,
+            required: false,
+        },
+        attempts: {
+            type: String,
             required: true
         }
     },

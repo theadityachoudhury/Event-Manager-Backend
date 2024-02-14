@@ -19,6 +19,8 @@ interface AppConfig {
   ORIGIN?: string; // Optional property for API origin
   accessKeyId?: any; // Optional property for AWS access key ID
   secretAccessKey?: any; // Optional property for AWS secret access key
+  RZRPAY_ID: string;
+  RZRPAY_SECRET: string;
 }
 
 /**
@@ -37,6 +39,8 @@ const config: AppConfig = {
   ORIGIN: process.env.ORIGIN,
   accessKeyId: process.env.accessKeyId,
   secretAccessKey: process.env.secretAccessKey,
+  RZRPAY_ID: process.env.RZRPAY_ID || "",
+  RZRPAY_SECRET: process.env.RZRPAY_SECRET || ""
 };
 
 export default config;

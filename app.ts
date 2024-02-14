@@ -9,6 +9,8 @@ import cookieParser from "cookie-parser";
 import Config from "./Config";
 import path from "path";
 import Demo from "./Routes/Demo";
+import Payments from "./Routes/Payments";
+
 
 // Server Initialization
 const app = express();
@@ -93,6 +95,8 @@ app.use("/api/event", Event);
  */
 app.use("/api/category", Category);
 app.use("/api/demo", Demo);
+app.use("/api/payments", Payments);
+
 
 
 // Default not-found route
