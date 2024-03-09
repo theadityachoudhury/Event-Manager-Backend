@@ -4,6 +4,7 @@ import Events from "../../Models/Events";
 import Fuse from "fuse.js";
 import EventRegistered from "../../Models/EventRegistered";
 import Payments from "../../Models/Payments";
+import Users from "../../Models/Users";
 
 // Define a custom request interface with additional properties
 interface customRequest extends Request {
@@ -181,11 +182,72 @@ const searchEvents = async (req: Request, res: Response, next: NextFunction) => 
 }
 
 const markAttendance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { eventId, userId } = req.params;
+        if (!eventId || !userId) {
+            return res.status(404).json({ success: false, message: "Data incomplete", reason: "no-data" });
+        }
+        const event = await Events.findById(eventId).select("eventAttendanceRequired");
+        if (!event) {
+            return res.status(400).json({ success: false, message: "No event found" });
+        }
+        if (!event.eventAttendanceRequired) {
+            return res.status(405).json({ success: false, message: "Attendance not allowed!!" });
+        }
 
+        const user = await Users.findById(userId).select("_id");
+        if (!user) {
+            return res.status(404).json({ success: false, message: "No user found!!" });
+        }
+
+        const eventRegistered = await EventRegistered.findOne({ userId: userId, eventId: eventId });
+        if (!eventRegistered) {
+            return res.status(404).json({ success: false, message: "Not registered in the event!!" });
+        }
+        eventRegistered.attended = true;
+        await eventRegistered.save();
+        return res.status(200).json();
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", reason: error });
+    }
 };
 
-const getAttendance = async (req: Request, res: Response, next: NextFunction) => {
+const markAttendanceBulk = async (req: Request, res: Response, next: NextFunction) => {
+    const {users} = req.body;
+    const {eventId} = req.params;
+    try {
+        for (const updatedAttendance of users) {
+            const attended = updatedAttendance.attended;
+            const user = updatedAttendance.userId._id;
+            await EventRegistered.findOneAndUpdate({ userId: user, eventId: eventId }, { attended: attended });
+        }
+        res.status(200).json();
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: false, message: "Internal Server Error!!", reason: error });
+    }
+}
 
+const getAttendance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { eventId } = req.params;
+        if (!eventId) {
+            return res.status(404).json({ success: false, message: "Data incomplete", reason: "no-data" });
+        }
+        const event = await Events.findById(eventId).select("eventAttendanceRequired");
+        if (!event) {
+            return res.status(400).json({ success: false, message: "No event found" });
+        }
+        if (!event.eventAttendanceRequired) {
+            return res.status(405).json({ success: false, message: "Attendance not allowed!!" });
+        }
+        const users = await EventRegistered.find({ eventId: eventId }, 'userId attended').populate('userId', 'name email');
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Internal Server Error!!", reason: error });
+
+    }
 };
 
 const isApplied = async (req: customRequest, res: Response, next: NextFunction) => {
@@ -200,11 +262,14 @@ const isApplied = async (req: customRequest, res: Response, next: NextFunction) 
         }
         const applied = await EventRegistered.findOne({ userId: req._id, eventId: id });
         if (applied) {
-            const payment: any = await Payments.findOne({ eventId: id, userId: req._id });
-            if (payment) {
-                if (payment.status == "captured")
+            if (event.price > 0) {
+                const payment: any = await Payments.findOne({ eventId: id, userId: req._id });
+                if (payment && payment.status === "captured")
                     return res.status(200).json();
+            } else {
+                return res.status(200).json();
             }
+
         }
         return res.status(401).json();
     } catch (err) {
@@ -223,13 +288,18 @@ const apply = async (req: customRequest, res: Response, next: NextFunction) => {
         }
         const event = await Events.findById(id);
         if (!event) {
-            return res.status(404).json();
+            return res.status(401).json();
         }
         const applied = await EventRegistered.findOne({ userId: req._id, eventId: id });
         if (applied) {
-            const payment: any = Payments.findOne({ eventId: id, userId: req._id });
-            if (payment && payment.status === "captured")
+            if (event.price > 0) {
+                const payment: any = Payments.findOne({ eventId: id, userId: req._id });
+                if (payment && payment.status === "captured")
+                    return res.status(409).json();
+            } else {
                 return res.status(409).json();
+            }
+
         }
         if (event.participantsCount >= event.eventParticipationLimit) {
             return res.status(406).json();
@@ -251,7 +321,31 @@ const apply = async (req: customRequest, res: Response, next: NextFunction) => {
 };
 
 const registeredUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const eventId = req.query.eventId as string;
+        const skip = (page - 1) * limit;
 
+        const totalCount = await EventRegistered.countDocuments({ eventId: eventId });
+        const totalPages = Math.ceil(totalCount / limit);
+        const eventRegistered = await EventRegistered.find({ eventId: eventId })
+            .populate({ path: 'eventId' })
+            .populate({ path: 'userId' })
+            .skip(skip)
+            .limit(limit);
+
+        const metadata = {
+            totalCount: totalCount,
+            currentPage: page,
+            totalPages: totalPages,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1
+        };
+        return res.status(200).json({ data: eventRegistered, metadata });
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 };
 
 const userRegisteredEvents = async (req: Request, res: Response, next: NextFunction) => {
@@ -278,5 +372,6 @@ export default {
     registeredUser,
     userRegisteredEvents,
     userAttendedEvents,
-    getApplications
+    getApplications,
+    markAttendanceBulk
 }

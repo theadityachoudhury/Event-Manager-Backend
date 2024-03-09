@@ -48,7 +48,7 @@ const getObjectURL = async (key: string): Promise<string> => {
 const putObject = async (filename: string, contentType: string): Promise<string> => {
     const command = new PutObjectCommand({
         Bucket: "evently-data",
-        Key: `profile/${filename}`,
+        Key: filename,
         ContentType: contentType
     });
 
@@ -72,7 +72,7 @@ const faceAdd = async (req: Request, res: Response, next: NextFunction): Promise
     }
 
     const { key, type } = req.body;
-    const url = await putObject(key, type);
+    const url = await putObject(`profile/${key}`, type);
     return res.status(200).json(url);
 };
 
@@ -95,6 +95,22 @@ const faceGet = async (req: customRequest, res: Response, next: NextFunction): P
     }
 
 };
+
+const eventImagePut = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.body.key || !req.body.eventId || !req.body.type) {
+        return res.status(404).json({
+            message: "Key or key type not found!!"
+        });
+    }
+
+    const { key, type,eventId } = req.body;
+    const url = await putObject(`event/${eventId}/${key}`, type);
+    return res.status(200).json(url);
+}
+
+const eventImageGet = async (req: Request, res: Response, next: NextFunction) => {
+    
+}
 
 export default {
     getObjectURL,
