@@ -214,12 +214,12 @@ const markAttendance = async (req: Request, res: Response, next: NextFunction) =
 
 const markAttendanceBulk = async (req: Request, res: Response, next: NextFunction) => {
     const {users} = req.body;
-    const {eventId} = req.params;
+    const {id} = req.params;
     try {
         for (const updatedAttendance of users) {
             const attended = updatedAttendance.attended;
             const user = updatedAttendance.userId._id;
-            await EventRegistered.findOneAndUpdate({ userId: user, eventId: eventId }, { attended: attended });
+            await EventRegistered.findOneAndUpdate({ userId: user, eventId: id }, { attended: attended });
         }
         res.status(200).json();
     } catch (error) {
@@ -230,18 +230,18 @@ const markAttendanceBulk = async (req: Request, res: Response, next: NextFunctio
 
 const getAttendance = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { eventId } = req.params;
-        if (!eventId) {
+        const { id } = req.params;
+        if (!id) {
             return res.status(404).json({ success: false, message: "Data incomplete", reason: "no-data" });
         }
-        const event = await Events.findById(eventId).select("eventAttendanceRequired");
+        const event = await Events.findById(id).select("eventAttendanceRequired");
         if (!event) {
             return res.status(400).json({ success: false, message: "No event found" });
         }
         if (!event.eventAttendanceRequired) {
             return res.status(405).json({ success: false, message: "Attendance not allowed!!" });
         }
-        const users = await EventRegistered.find({ eventId: eventId }, 'userId attended').populate('userId', 'name email');
+        const users = await EventRegistered.find({ eventId: id }, 'userId attended').populate('userId', 'name email');
         return res.status(200).json(users);
     } catch (error) {
         console.log(error);

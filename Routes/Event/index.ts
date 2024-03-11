@@ -18,8 +18,8 @@ router.post("/apply/:id", Auth.verifytoken as any, Events.apply as any);
 router.get("/isApplied/:id", Auth.verifytoken as any, Events.isApplied as any);
 
 router.post("/mark/:eventId/:userId", Auth.verifytoken as any, EventValidator.isOwner as any, Events.markAttendance);
-router.get("/getAttendance/:eventId", Auth.verifytoken as any, EventValidator.isOwner as any, Events.getAttendance);
-router.post("/mark/:eventId", Auth.verifytoken as any, EventValidator.isOwner as any, Events.markAttendanceBulk);
+router.get("/getAttendance/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.getAttendance);
+router.post("/mark/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.markAttendanceBulk);
 
 router.get("/:id", Events.viewEvent);
 
