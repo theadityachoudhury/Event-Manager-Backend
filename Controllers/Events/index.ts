@@ -42,15 +42,15 @@ const addEvents = async (req: Request, res: Response, next: NextFunction) => {
 
 const deleteEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { eventId } = req.params;
-        if (!eventId) {
+        const { id } = req.params;
+        if (!id) {
             return res.status(404).json({
                 message: "Event Id not found",
                 success: false
             });
         }
 
-        const event = await Events.findByIdAndDelete(eventId);
+        const event = await Events.findByIdAndDelete(id);
         return res.status(200).json();
     } catch (err) {
         return res.status(500).json({
@@ -322,27 +322,11 @@ const apply = async (req: customRequest, res: Response, next: NextFunction) => {
 
 const registeredUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
-        const eventId = req.query.eventId as string;
-        const skip = (page - 1) * limit;
-
-        const totalCount = await EventRegistered.countDocuments({ eventId: eventId });
-        const totalPages = Math.ceil(totalCount / limit);
-        const eventRegistered = await EventRegistered.find({ eventId: eventId })
-            .populate({ path: 'eventId' })
-            .populate({ path: 'userId' })
-            .skip(skip)
-            .limit(limit);
-
-        const metadata = {
-            totalCount: totalCount,
-            currentPage: page,
-            totalPages: totalPages,
-            hasNextPage: page < totalPages,
-            hasPreviousPage: page > 1
-        };
-        return res.status(200).json({ data: eventRegistered, metadata });
+        const id = req.params.id as string;
+        const eventRegistered = await EventRegistered.find({ eventId: id })
+            // .populate({ path: 'eventId' })
+            .populate({ path: 'userId', select: 'name email verified face id' });
+        return res.status(200).json(eventRegistered);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }

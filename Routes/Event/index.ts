@@ -20,8 +20,10 @@ router.get("/isApplied/:id", Auth.verifytoken as any, Events.isApplied as any);
 router.post("/mark/:eventId/:userId", Auth.verifytoken as any, EventValidator.isOwner as any, Events.markAttendance);
 router.get("/getAttendance/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.getAttendance);
 router.post("/mark/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.markAttendanceBulk);
+router.get("/registeredUsers/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.registeredUser);
 
 router.get("/:id", Events.viewEvent);
 
+router.delete("/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.deleteEvent);
 
 export default router;
