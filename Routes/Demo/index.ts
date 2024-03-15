@@ -7,4 +7,6 @@ const router = express.Router();
 router.post("/", Auth.verifytoken as any, Demo.addItem as any);
 router.get("/", Auth.verifytoken as any, Demo.getItem as any);
 
+router.get("/get/socials", Demo.getSocials);
+
 export default router;

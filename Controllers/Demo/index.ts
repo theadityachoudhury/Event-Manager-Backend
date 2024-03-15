@@ -41,7 +41,7 @@ const addItem = async (req: customRequest, res: Response) => {
 
 const getItem = async (req: customRequest, res: Response) => {
     try {
-        const demo = await Demo.find({employeeId:req._id}).populate("employeeId");
+        const demo = await Demo.find({ employeeId: req._id }).populate("employeeId");
         console.log(demo);
         return res.status(200).json(demo);
     } catch (err) {
@@ -53,7 +53,29 @@ const getItem = async (req: customRequest, res: Response) => {
     }
 }
 
+const getSocials = async (req: Request, res: Response) => {
+    const { social } = req.query;
+    const facebook = ["https://www.facebook.com/people/Bang-All/pfbid02VVLsGveuJQojF2iv4Jfsz6f8qT1dkUGwjQQqmByte3B3jMbdMD9iDGYk6ayaiSQrl/", "https://www.facebook.com/people/Momyy-All/pfbid0xTn9RN8bd7xFKgB6R75Kk4bao4RHsxyg6oEPBR9aYVqhPZaJDgHgshEN2UasCQcLl/", "https://www.facebook.com/people/All-Thin/pfbid0xtMLYxwtWYMSPGwnK7bat75ps7ML9zoQfyLH8NcyYcLN51hkDmhrtgFKTFwMMs5Gl/"];
+    const instagram = ["https://www.instagram.com/the_aditya27/", "https://www.instagram.com/the_aditya27/", "https://www.instagram.com/the_aditya27/"];
+    const youtube = ["https://www.youtube.com/watch?v=6Lt0VFP23cU&t=29s", "https://www.youtube.com/watch?v=6Lt0VFP23cU&t=29s", "https://www.youtube.com/watch?v=SMk5_ujn4xI&t=1s"];
+
+    if (!social) {
+        return res.status(200).json({ facebook, instagram, youtube });
+    }
+
+    if (social == "facebook") {
+        return res.status(200).json({facebook});
+    } else if (social == "instagram") {
+        return res.status(200).json({instagram});
+    } else if (social == "youtube") {
+        return res.status(200).json({youtube});
+    }
+
+    return res.status(200).json();
+}
+
 export default {
     addItem,
-    getItem
+    getItem,
+    getSocials
 }
