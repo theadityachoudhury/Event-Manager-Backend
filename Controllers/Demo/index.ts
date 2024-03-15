@@ -41,7 +41,8 @@ const addItem = async (req: customRequest, res: Response) => {
 
 const getItem = async (req: customRequest, res: Response) => {
     try {
-        const demo = await Demo.find({ email: req.email }).populate("employeeId");
+        const demo = await Demo.find({employeeId:req._id}).populate("employeeId");
+        console.log(demo);
         return res.status(200).json(demo);
     } catch (err) {
         return res.status(500).json({
