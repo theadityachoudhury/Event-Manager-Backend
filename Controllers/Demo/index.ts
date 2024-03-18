@@ -41,8 +41,7 @@ const addItem = async (req: customRequest, res: Response) => {
 
 const getItem = async (req: customRequest, res: Response) => {
     try {
-        const demo = await Demo.find({ employeeId: req._id }).populate("employeeId");
-        console.log(demo);
+        const demo = await Demo.find({ employeeId: req._id });
         return res.status(200).json(demo);
     } catch (err) {
         return res.status(500).json({
@@ -50,6 +49,24 @@ const getItem = async (req: customRequest, res: Response) => {
             err: err,
             success: false
         });
+    }
+}
+
+const editItem = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const updateData = req.body;
+
+    try {
+        // Find the document by id and update it
+        const updatedDemo = await Demo.findByIdAndUpdate(id, updateData, { new: true });
+
+        if (!updatedDemo) {
+            return res.status(404).json({ message: "Demo not found" });
+        }
+
+        return res.status(200).json(updatedDemo);
+    } catch (error) {
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
@@ -64,18 +81,31 @@ const getSocials = async (req: Request, res: Response) => {
     }
 
     if (social == "facebook") {
-        return res.status(200).json({facebook});
+        return res.status(200).json({ facebook });
     } else if (social == "instagram") {
-        return res.status(200).json({instagram});
+        return res.status(200).json({ instagram });
     } else if (social == "youtube") {
-        return res.status(200).json({youtube});
+        return res.status(200).json({ youtube });
     }
 
     return res.status(200).json();
 }
 
+const deleteItem = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(404).json();
+        }
+    } catch (error) {
+
+    }
+}
+
 export default {
     addItem,
     getItem,
-    getSocials
+    getSocials,
+    editItem,
+    deleteItem
 }

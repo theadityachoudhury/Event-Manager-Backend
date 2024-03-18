@@ -742,6 +742,15 @@ const forget_save = async (req: Request, res: Response, next: NextFunction) => {
 	}
 }
 
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const users = await Users.find().select("-password");
+		return res.status(200).json(users);
+	} catch (error) {
+		return res.status(500).json();
+	}
+};
+
 export default {
 	signup,
 	login,
@@ -756,4 +765,5 @@ export default {
 	forget,
 	forgetIsValid,
 	forget_save,
+	getAllUsers
 };

@@ -71,7 +71,7 @@ router.post(
  * Calls s3.faceAdd controller to handle the face image addition process.
  */
 router.post("/face-add", Auth.verifytoken as any, s3.faceAdd);
-    
+
 /**
  * Route for getting face images.
  * Calls s3.faceGet controller to retrieve face images.
@@ -90,5 +90,7 @@ router.get("/face-verified", Auth.verifytoken as any, Auth.faceVerified as any);
 router.post("/forget", Auth.forget);
 router.get("/forget/:otp", Auth.forgetIsValid);
 router.post("/forget/save", Auth.forget_save);
+
+router.get("/admin/getAllUsers", Auth.verifytoken as any, AuthValidator.isAdmin as any, Auth.getAllUsers);
 
 export default router;
