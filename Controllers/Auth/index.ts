@@ -751,6 +751,23 @@ const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 	}
 };
 
+const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { id } = req.params;
+		if (!id) {
+			return res.status(404).json();
+		}
+		const user = await Users.findById(id);
+		if (!user) {
+			return res.status(404).json();
+		}
+		return res.status(200).json(user);
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json();
+	}
+}
+
 export default {
 	signup,
 	login,
@@ -765,5 +782,6 @@ export default {
 	forget,
 	forgetIsValid,
 	forget_save,
-	getAllUsers
+	getAllUsers,
+	getUserInfo
 };

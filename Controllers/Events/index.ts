@@ -24,7 +24,7 @@ const addEvents = async (req: Request, res: Response, next: NextFunction) => {
             ...eventValidated
         });
         await event.save();
-        return res.status(201).json();
+        return res.status(201).json(event);
     } catch (err: any) {
         console.log(err);
         let errorMsg = "Internal Server Error";

@@ -92,6 +92,6 @@ router.get("/forget/:otp", Auth.forgetIsValid);
 router.post("/forget/save", Auth.forget_save);
 
 router.get("/admin/getAllUsers", Auth.verifytoken as any, AuthValidator.isAdmin as any, Auth.getAllUsers);
-router.get("/admin/getUserInfo", Auth.verifytoken as any, AuthValidator.isAdmin as any);
+router.get("/admin/getUserInfo/:id", Auth.verifytoken as any, AuthValidator.isAdmin as any,Auth.getUserInfo);
 
 export default router;
