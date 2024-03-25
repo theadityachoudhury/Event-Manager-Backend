@@ -213,8 +213,8 @@ const markAttendance = async (req: Request, res: Response, next: NextFunction) =
 };
 
 const markAttendanceBulk = async (req: Request, res: Response, next: NextFunction) => {
-    const {users} = req.body;
-    const {id} = req.params;
+    const { users } = req.body;
+    const { id } = req.params;
     try {
         for (const updatedAttendance of users) {
             const attended = updatedAttendance.attended;
@@ -332,6 +332,41 @@ const registeredUser = async (req: Request, res: Response, next: NextFunction) =
     }
 };
 
+const userCreatedEvents = async (req: customRequest, res: Response, next: NextFunction) => {
+    try {
+        const userId = req._id;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dayAfterTomorrow = new Date(tomorrow);
+        dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+
+        const todayEvents = await Events.find({
+            ownerId: userId,
+            eventStartDate: { $gte: today, $lt: tomorrow }
+        });
+
+        const tomorrowEvents = await Events.find({
+            ownerId: userId,
+            eventStartDate: { $gte: tomorrow, $lt: dayAfterTomorrow }
+        });
+
+        const upcomingEvents = await Events.find({
+            ownerId: userId,
+            eventStartDate: { $gte: dayAfterTomorrow }
+        });
+
+        res.json({
+            today: todayEvents,
+            tomorrow: tomorrowEvents,
+            upcoming: upcomingEvents
+        });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 const userRegisteredEvents = async (req: Request, res: Response, next: NextFunction) => {
 
 };
@@ -357,5 +392,6 @@ export default {
     userRegisteredEvents,
     userAttendedEvents,
     getApplications,
-    markAttendanceBulk
+    markAttendanceBulk,
+    userCreatedEvents,
 }
