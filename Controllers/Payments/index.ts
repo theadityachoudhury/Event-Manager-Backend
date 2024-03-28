@@ -108,7 +108,8 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction) =>
         paymentMethod: method,
         international: international,
         receipt: receipt,
-    });
+    }, { returnDocument: 'after' });
+    await Events.findByIdAndUpdate(payment?.eventId, { $inc: { participantsCount: 1 } });
     mailer("adityasubham03@gmail.com", "Payment Update", `${req.body}`, "payment_info")
     return res.status(200).json();
 

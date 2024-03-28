@@ -310,6 +310,7 @@ const apply = async (req: customRequest, res: Response, next: NextFunction) => {
             eventId: id,
         });
         await apply.save();
+        await Events.findByIdAndUpdate(id, { $inc: { participantsCount: 1 } });
 
         return res.status(200).json();
     } catch (err) {
@@ -342,22 +343,28 @@ const userCreatedEvents = async (req: customRequest, res: Response, next: NextFu
         const dayAfterTomorrow = new Date(tomorrow);
         dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
 
+        const pastEvents = await Events.find({
+            ownerId: userId,
+            eventStartDate: { $lt: today }
+        }).populate("eventCategory");
+
         const todayEvents = await Events.find({
             ownerId: userId,
             eventStartDate: { $gte: today, $lt: tomorrow }
-        });
+        }).populate("eventCategory");
 
         const tomorrowEvents = await Events.find({
             ownerId: userId,
             eventStartDate: { $gte: tomorrow, $lt: dayAfterTomorrow }
-        });
+        }).populate("eventCategory");
 
         const upcomingEvents = await Events.find({
             ownerId: userId,
             eventStartDate: { $gte: dayAfterTomorrow }
-        });
+        }).populate("eventCategory");
 
         res.json({
+            past: pastEvents,
             today: todayEvents,
             tomorrow: tomorrowEvents,
             upcoming: upcomingEvents
