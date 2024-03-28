@@ -108,8 +108,8 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 		});
 		mailer(
 			req.body.email,
-			"Account Created || PG Search",
-			`Your Account has been created in the Get-Me-Through portal.<br>To verify your account click on the link:- <a href="http://localhost:5173/verify" target="_blank">http://localhost:5173/verify</a>`,
+			"Account Created || Evently",
+			`Your Account has been created in the Evently portal.<br>To verify your account click on the link:- <a href="http://localhost:5173/verify" target="_blank">http://localhost:5173/verify</a>`,
 			"acc_creation"
 		);
 		return;
@@ -610,7 +610,7 @@ const generate = async (
 	try {
 		mailer(
 			email,
-			"Account Verification OTP | Get-Me-Through",
+			"Account Verification OTP || Evently",
 			`Your account verification OTP is :- ${otp}`,
 			auth_type
 		);
@@ -691,7 +691,7 @@ const forget = async (req: Request, res: Response, next: NextFunction) => {
 	await auth.save();
 	mailer(
 		email,
-		"Password Reset Link | Get-Me-Through",
+		"Password Reset Link || Evently",
 		`To reset your password click this link:- <a href=${Config.ORIGIN}/forget/${otp} target="_blank">${Config.ORIGIN}/forget/${otp}</a>`,
 		auth_type
 	);
