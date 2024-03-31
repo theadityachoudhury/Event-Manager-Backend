@@ -167,7 +167,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 					verified: user.verified,
 				},
 				JWT_SECRET,
-				{ expiresIn: "10m" }
+				{ expiresIn: "1hour" }
 			);
 
 			let refreshToken = jsonwebtoken.sign(
@@ -206,7 +206,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			}
 			res.cookie("token", token, {
 				path: "/",
-				expires: new Date(Date.now() + 1000 * 60 * 10),
+				expires: new Date(Date.now() + 1000 * 60 * 60),
 				httpOnly: true,
 				sameSite: "lax",
 			});
@@ -219,7 +219,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 			let backendTokens = {
 				token: token,
 				refreshToken: refreshToken,
-				expiresIn: new Date().setTime(new Date().getTime() + 10 * 60 * 1000)
+				expiresIn: new Date().setTime(new Date().getTime() + 60 * 60 * 1000)
 			};
 
 			return res.status(200).json({
@@ -370,14 +370,14 @@ const refresh = async (
 		);
 		res.cookie("token", token, {
 			path: "/",
-			expires: new Date(Date.now() + 1000 * 60 * 10),
+			expires: new Date(Date.now() + 1000 * 60 * 60),
 			httpOnly: true,
 			sameSite: "lax",
 		});
 		return res.status(200).json({
 			token,
 			refreshToken: req.token,
-			expiresIn: new Date().setTime(new Date().getTime() + 10 * 1000)
+			expiresIn: new Date().setTime(new Date().getTime() + 60 * 1000)
 
 		});
 	}
