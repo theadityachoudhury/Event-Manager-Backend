@@ -397,12 +397,34 @@ const userCreatedEvents = async (req: customRequest, res: Response, next: NextFu
     }
 }
 
-const userRegisteredEvents = async (req: Request, res: Response, next: NextFunction) => {
-
+const userRegisteredEvents = async (req: customRequest, res: Response, next: NextFunction) => {
+    try {
+        const { _id } = req;
+        const registeredEvents = await EventRegistered.find({ userId: _id })
+            .populate({
+                path: 'eventId',
+                select: 'eventName eventStartDate eventLocation'
+            });
+        return res.status(200).json(registeredEvents);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 };
 
-const userAttendedEvents = async (req: Request, res: Response, next: NextFunction) => {
-
+const userAttendedEvents = async (req: customRequest, res: Response, next: NextFunction) => {
+    try {
+        const { _id } = req; // Extract the user ID from request parameters
+        const attendedEvents = await EventRegistered.find({ userId: _id, attended: true })
+            .populate({
+                path: 'Events',
+                select: 'eventName eventStartDate eventLocation'  // Specify the fields you want to populate
+            });
+        res.status(200).json(attendedEvents);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 };
 
 const getApplications = async (req: Request, res: Response, next: NextFunction) => {

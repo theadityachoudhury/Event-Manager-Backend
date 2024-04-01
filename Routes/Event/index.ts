@@ -15,6 +15,10 @@ router.delete("/", Auth.verifytoken as any, EventValidator.isOwner as any, Event
 router.get("/", Events.searchEvents);
 router.patch("/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.updateEvent);
 
+router.get("/get/registeredEvents", Auth.verifytoken as any, Events.userRegisteredEvents as any);
+router.get("/get/attendedEvents", Auth.verifytoken as any, Events.userAttendedEvents as any);
+
+
 router.post("/apply/:id", Auth.verifytoken as any, Events.apply as any);
 router.get("/isApplied/:id", Auth.verifytoken as any, Events.isApplied as any);
 
