@@ -60,6 +60,29 @@ const deleteEvent = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateEvent = async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    if (!id) return res.status(404).json({ message: "Event Id not found" });
+    try {
+        const eventValidated = await eventValidator.eventsSchema.validateAsync(req.body);
+        const event = await Events.findByIdAndUpdate(id, eventValidated, { new: true });
+        if (!event) {
+            return res.status(404).send('Event not found');
+        }
+        // Respond with the updated event
+        res.status(200).json(event);
+    } catch (err: any) {
+        console.log(err);
+        let errorMsg = "Internal Server Error";
+        if (err.isJoi === true) {
+            err.status = 403;
+            errorMsg = err.message;
+        }
+        return res.status(err.status || 500).json({
+            reason: "server",
+            message: errorMsg,
+            success: false,
+        });
+    }
 
 };
 

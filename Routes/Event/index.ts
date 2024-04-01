@@ -13,6 +13,7 @@ const router = express.Router();
 router.post("/", Auth.verifytoken as any, Events.addEvents);
 router.delete("/", Auth.verifytoken as any, EventValidator.isOwner as any, Events.deleteEvent);
 router.get("/", Events.searchEvents);
+router.patch("/:id", Auth.verifytoken as any, EventValidator.isOwner as any, Events.updateEvent);
 
 router.post("/apply/:id", Auth.verifytoken as any, Events.apply as any);
 router.get("/isApplied/:id", Auth.verifytoken as any, Events.isApplied as any);
