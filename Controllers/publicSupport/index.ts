@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import contactSchema from "../../Validators/Contact";
 import ContactLogs from "../../Models/ContactLogs";
+import EmailLogs from "../../Models/EmailLogs";
 
 /**
  * Adds a new ticket.
@@ -61,7 +62,12 @@ const getTickets = async (req: Request, res: Response, next: NextFunction) => {
  * @param {NextFunction} next - Express next function.
  */
 const getEmailLogs = async (req: Request, res: Response, next: NextFunction) => {
-
+    try {
+        const emailLogs = await EmailLogs.find();
+        return res.status(200).json(emailLogs);
+    } catch (error: any) {
+        return res.status(500).json({ message: "Something unexpected happened!!" })
+    }
 };
 
 export default {

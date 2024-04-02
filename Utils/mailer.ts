@@ -63,7 +63,7 @@ export const mailer = async (
     }
 
     let message = {
-        from: '"Aditya Choudhury" <aditya@adityachoudhury.com>', // sender address
+        from: '"Evently Support" <aditya@adityachoudhury.com>', // sender address
         to: to.join(", "), // List of receivers, join the array into a comma-separated string
         subject: subject, // Subject line
         html: hbody, // HTML body

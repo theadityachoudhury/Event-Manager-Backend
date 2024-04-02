@@ -23,5 +23,6 @@ router.get("/contact", Auth.verifytoken as any, AuthValidator.isAdmin as any, pu
  * Needs to be implemented with a corresponding controller function.
  */
 router.get("/contact/:id", /* controller function to be added */);
+router.get("/email", Auth.verifytoken as any, AuthValidator.isAdmin as any, publicSupport.getEmailLogs);
 
 export default router;
