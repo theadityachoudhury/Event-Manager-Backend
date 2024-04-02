@@ -109,7 +109,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 		mailer(
 			req.body.email,
 			"Account Created || Evently",
-			`Your Account has been created in the Evently portal.<br>To verify your account click on the link:- <a href="http://localhost:5173/verify" target="_blank">http://localhost:5173/verify</a>`,
+			`Your Account has been created in the Evently portal.<br>To verify your account click on the link:- <a href="https://evently.adityachoudhury.com/verify" target="_blank">http://localhost:5173/verify</a>`,
 			"acc_creation"
 		);
 		return;
