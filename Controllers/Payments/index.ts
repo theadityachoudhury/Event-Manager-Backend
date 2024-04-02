@@ -110,7 +110,19 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction) =>
         receipt: receipt,
     }, { returnDocument: 'after' });
     await Events.findByIdAndUpdate(payment?.eventId, { $inc: { participantsCount: 1 } });
-    mailer("adityasubham03@gmail.com", "Payment Update || Evently", `${req.body}`, "payment_info")
+    const event = await Events.findById(payment?.eventId);
+    mailer("adityasubham03@gmail.com", "Payment Update || Evently", `<div><h2>Thank you for applying to this event!!<h2>
+    <h3>Payment Status: ${status}</h3>
+    <h3>Payment Id: ${id}</h3>
+    <h3>Payment Method: ${method}</h3>
+
+    Event Information:<br>
+    <h3>Event Id: ${payment?.eventId}</h3>
+    <h3>Event Name: ${event?.eventName}</h3>
+    <h3>Event Date: ${event?.eventStartDate}</h3>
+    <h3>Event Location: ${event?.eventLocation}</h3>
+    <h3>Event Description: ${event?.eventDescription}</h3>
+    <div>`, "payment_info")
     return res.status(200).json();
 
 }
