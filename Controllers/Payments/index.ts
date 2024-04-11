@@ -6,6 +6,7 @@ import Payments from "../../Models/Payments";
 import Events from "../../Models/Events";
 import crypto from "crypto"
 import { mailer } from "../../Utils";
+import Users from "../../Models/Users";
 
 // Define a custom request interface with additional properties
 interface customRequest extends Request {
@@ -111,7 +112,8 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction) =>
     }, { returnDocument: 'after' });
     await Events.findByIdAndUpdate(payment?.eventId, { $inc: { participantsCount: 1 } });
     const event = await Events.findById(payment?.eventId);
-    mailer("adityasubham03@gmail.com", "Payment Update || Evently", `<div><h2>Thank you for applying to this event!!<h2>
+    const user = await Users.findById(payment?.userId).select("email");
+    mailer(user?.email, "Payment Update || Evently", `<div><h2>Thank you for applying to this event!!<h2>
     <h3>Payment Status: ${status}</h3>
     <h3>Payment Id: ${id}</h3>
     <h3>Payment Method: ${method}</h3>
