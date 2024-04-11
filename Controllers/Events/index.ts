@@ -417,7 +417,7 @@ const userAttendedEvents = async (req: customRequest, res: Response, next: NextF
         const { _id } = req; // Extract the user ID from request parameters
         const attendedEvents = await EventRegistered.find({ userId: _id, attended: true })
             .populate({
-                path: 'Events',
+                path: 'eventId',
                 select: 'eventName eventStartDate eventLocation'  // Specify the fields you want to populate
             });
         res.status(200).json(attendedEvents);
