@@ -30,7 +30,7 @@ const s3Client = new S3Client({
  */
 const getObjectURL = async (key: string): Promise<string> => {
     const command = new GetObjectCommand({
-        Bucket: "evently-data",
+        Bucket: "evently1",
         Key: key
     });
 
@@ -47,7 +47,7 @@ const getObjectURL = async (key: string): Promise<string> => {
  */
 const putObject = async (filename: string, contentType: string): Promise<string> => {
     const command = new PutObjectCommand({
-        Bucket: "evently-data",
+        Bucket: "evently1",
         Key: filename,
         ContentType: contentType
     });
