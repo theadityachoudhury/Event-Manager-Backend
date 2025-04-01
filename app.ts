@@ -23,7 +23,7 @@ const corsOrigin: string = Config.ORIGIN as string;
 app.use(
     cors({
         credentials: true,
-        origin: [corsOrigin,"https://evently.adityachoudhury.com],
+        origin: [corsOrigin,"https://evently.adityachoudhury.com"],
     })
 );
 app.disable('x-powered-by');
