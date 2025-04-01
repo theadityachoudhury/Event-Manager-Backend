@@ -23,7 +23,7 @@ const corsOrigin: string = Config.ORIGIN as string;
 app.use(
     cors({
         credentials: true,
-        origin: [corsOrigin,"https://evently.adityachoudhury.com"],
+        origin: ["http://localhost:5173","https://evently.adityachoudhury.com"],
     })
 );
 app.disable('x-powered-by');
