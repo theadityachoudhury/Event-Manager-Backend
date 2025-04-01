@@ -23,7 +23,9 @@ const corsOrigin: string = Config.ORIGIN as string;
 app.use(
     cors({
         credentials: true,
-        origin: ["http://localhost:5173","https://evently.adityachoudhury.com"],
+        origin: ["http://localhost:5173", "https://evently.adityachoudhury.com"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"]
     })
 );
 app.disable('x-powered-by');
@@ -41,11 +43,6 @@ app.use("/public", express.static("./public"));
 /**
  * Default middleware for handling CORS headers.
  */
-app.use((req: Request, res: Response, next: NextFunction) => {
-    res.header("Access-Control-Allow-Origin", corsOrigin);
-    res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With, Content-Type, Accept");
-    next();
-});
 
 /**
  * Default route providing information about the server.
